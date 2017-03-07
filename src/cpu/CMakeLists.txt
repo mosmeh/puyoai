@@ -67,3 +67,6 @@ add_subdirectory(control_tester)
 
 add_subdirectory(kantoku)
 add_subdirectory(colun)
+
+add_subdirectory(kurumi)
+add_subdirectory(random)

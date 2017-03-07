@@ -1,0 +1,8 @@
+net: "net.prototxt"
+solver_type: SGD
+momentum: 0
+base_lr: 0.003
+lr_policy: "step"
+stepsize: 1000000
+max_iter: 2000000
+display: 10000

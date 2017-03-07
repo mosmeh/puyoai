@@ -1,0 +1,290 @@
+layer {
+  name: "me_field_input_layer"
+  type: "MemoryData"
+  top: "me_field"
+  top: "dummy1"
+  memory_data_param {
+    batch_size: 32
+    channels: 5
+    height: 13
+    width: 6
+  }
+}
+layer {
+  name: "enemy_field_input_layer"
+  type: "MemoryData"
+  top: "enemy_field"
+  top: "dummy2"
+  memory_data_param {
+    batch_size: 32
+    channels: 5
+    height: 13
+    width: 6
+  }
+}
+layer {
+  name: "aux_input_layer"
+  type: "MemoryData"
+  top: "aux"
+  top: "dummy3"
+  memory_data_param {
+    batch_size: 32
+    channels: 1
+    height: 1
+    width: 10
+  }
+}
+layer {
+  name: "action_input_layer"
+  type: "MemoryData"
+  top: "action"
+  top: "dummy4"
+  memory_data_param {
+    batch_size: 32
+    channels: 1
+    height: 1
+    width: 1
+  }
+}
+layer {
+  name: "reward_input_layer"
+  type: "MemoryData"
+  top: "reward"
+  top: "dummy5"
+  memory_data_param {
+    batch_size: 32
+    channels: 1
+    height: 1
+    width: 1
+  }
+}
+layer {
+  name: "legality_input_layer"
+  type: "MemoryData"
+  top: "legality"
+  top: "dummy6"
+  memory_data_param {
+    batch_size: 32
+    channels: 22
+    height: 1
+    width: 1
+  }
+}
+
+layer {
+  name: "silence_layer"
+  type: "Silence"
+  bottom: "dummy1"
+  bottom: "dummy2"
+  bottom: "dummy3"
+  bottom: "dummy4"
+  bottom: "dummy5"
+  bottom: "dummy6"
+}
+
+layer {
+  name: "me_field_conv1_layer"
+  type: "Convolution"
+  bottom: "me_field"
+  top: "me_field_conv1"
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+  name: "me_field_conv1_relu_layer"
+  type: "ReLU"
+  bottom: "me_field_conv1"
+  top: "me_field_conv1"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+layer {
+  name: "me_field_conv2_layer"
+  type: "Convolution"
+  bottom: "me_field_conv1"
+  top: "me_field_conv2"
+  convolution_param {
+    num_output: 32
+    kernel_size: 2
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+  name: "me_field_conv2_relu_layer"
+  type: "ReLU"
+  bottom: "me_field_conv2"
+  top: "me_field_conv2"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+  name: "enemy_field_conv1_layer"
+  type: "Convolution"
+  bottom: "enemy_field"
+  top: "enemy_field_conv1"
+  convolution_param {
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+  name: "enemy_field_conv1_relu_layer"
+  type: "ReLU"
+  bottom: "enemy_field_conv1"
+  top: "enemy_field_conv1"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+layer {
+  name: "enemy_field_conv2_layer"
+  type: "Convolution"
+  bottom: "enemy_field_conv1"
+  top: "enemy_field_conv2"
+  convolution_param {
+    num_output: 32
+    kernel_size: 2
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+  name: "enemy_field_conv2_relu_layer"
+  type: "ReLU"
+  bottom: "enemy_field_conv2"
+  top: "enemy_field_conv2"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+layer {
+  name: "me_field_flatten_layer"
+  type: "Flatten"
+  bottom: "me_field_conv2"
+  top: "flattened_me_field"
+}
+layer {
+  name: "enemy_field_flatten_layer"
+  type: "Flatten"
+  bottom: "enemy_field_conv2"
+  top: "flattened_enemy_field"
+}
+layer {
+  name: "aux_flatten_layer"
+  type: "Flatten"
+  bottom: "aux"
+  top: "flattened_aux"
+}
+
+layer {
+  name: "concat"
+  type: "Concat"
+  bottom: "flattened_me_field"
+  bottom: "flattened_enemy_field"
+  bottom: "flattened_aux"
+  top: "concatenated"
+  concat_param {
+    axis: 1
+  }
+}
+
+layer {
+  name: "ip1_layer"
+  type: "InnerProduct"
+  bottom: "concatenated"
+  top: "ip1"
+  inner_product_param {
+    num_output: 2048
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+  name: "ip1_relu_layer"
+  type: "ReLU"
+  bottom: "ip1"
+  top: "ip1"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+layer {
+  name: "ip2_layer"
+  type: "InnerProduct"
+  bottom: "ip1"
+  top: "ip2"
+  inner_product_param {
+    num_output: 2048
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+  name: "ip2_relu_layer"
+  type: "ReLU"
+  bottom: "ip2"
+  top: "ip2"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+layer {
+  name: "ip3_layer"
+  type: "InnerProduct"
+  bottom: "ip2"
+  top: "ip3"
+  inner_product_param {
+    num_output: 22
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+  }
+}
+layer {
+  name: "softmax_layer"
+  type: "Softmax"
+  bottom: "ip3"
+  top: "prob"
+}
+
+layer {
+  name: "reinforce_layer"
+  type: "Reinforce"
+  bottom: "prob"
+  bottom: "action"
+  bottom: "reward"
+  bottom: "legality"
+  top: "reinforce"
+}
